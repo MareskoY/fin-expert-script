@@ -231,7 +231,9 @@ function start({token}) {
     // http://localhost:3000/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com
 
     //https://app.askfinancas.pt
-    // https://app.askfinancas.pt/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com
+    // https://app.askfinancas.pt/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com\
+    chatIframe.allow = "same-origin";
+    chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups";
     chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
