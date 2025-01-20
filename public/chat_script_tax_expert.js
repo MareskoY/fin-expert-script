@@ -1,4 +1,5 @@
 const CHAT_DOMAIN = "http://localhost:3000";
+const CHAT_DOMAIN = "https://app.askfinancas.pt";
 // ===================== Styles=====================
 const STYLES_DEFAULT = `
     @font-face {
