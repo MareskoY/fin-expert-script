@@ -1,4 +1,4 @@
-// const CHAT_DOMAIN = "http://localhost:3000";
+//1 const CHAT_DOMAIN = "http://localhost:3000";
 const CHAT_DOMAIN = "https://app.askfinancas.pt";
 // ===================== Styles=====================
 const STYLES_DEFAULT = `
@@ -229,7 +229,10 @@ function start({token}) {
     console.log("token", token)
     console.log("domain", domain)
     // http://localhost:3000/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com
-    chatIframe.src = `${CHAT_DOMAIN}/auto-login?token=${token}&domain=${domain}`;
+
+    //https://app.askfinancas.pt
+    // https://app.askfinancas.pt/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com
+    chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
 
