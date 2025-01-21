@@ -225,8 +225,8 @@ function start({token}) {
     const chatIframe = document.createElement("iframe");
     chatIframe.id = "chapa-shopper-aid-iframe";
     // TODO: Use jwt_token here
-    const domain = window.location.hostname;
-    // const domain = "bb-nikita-test-env.myshopify.com";
+    // const domain = window.location.hostname;
+    const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups";
     console.log("11111")
