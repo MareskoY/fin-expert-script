@@ -1,4 +1,4 @@
-//1 const CHAT_DOMAIN = "http://localhost:3000";
+// const CHAT_DOMAIN = "http://localhost:3000";
 const CHAT_DOMAIN = "https://app.askfinancas.pt";
 // ===================== Styles=====================
 const STYLES_DEFAULT = `
@@ -226,14 +226,10 @@ function start({token}) {
     chatIframe.id = "chapa-shopper-aid-iframe";
     // TODO: Use jwt_token here
     const domain = window.location.hostname;
-    console.log("token", token)
-    console.log("domain", domain)
-    // http://localhost:3000/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com
-
-    //https://app.askfinancas.pt
-    // https://app.askfinancas.pt/auto-login?token=e7df5b5b-eee4-47f8-8a4e-3884b3fe5c43&domain=bb-nikita-test-env.myshopify.com\
+    // const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups";
+    console.log("11111")
     chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
