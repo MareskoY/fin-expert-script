@@ -228,7 +228,7 @@ function start({token}) {
     // const domain = window.location.hostname;
     const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin";
-    chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation";
+    chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation allow-clipboard-write";
     chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
