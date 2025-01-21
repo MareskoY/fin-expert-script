@@ -302,6 +302,17 @@ function start({token}) {
 
     // 9) Show the button immediately
     chatButtonContainer.classList.add("show");
+
+
+    window.addEventListener("message", (event) => {
+        if (event.data.action === "tax-expert-copy-to-clipboard") {
+            navigator.clipboard.writeText(event.data.content).then(() => {
+                console.log("Copied to clipboard:", event.data.content);
+            }).catch((err) => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+    });
 }
 
 // ===================== Script initialization (DOM ready) =====================
