@@ -230,9 +230,8 @@ function start({ token }) {
     chatIframe.allow = "same-origin";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation allow-clipboard-write";
 
-    setupIframe({ token, domain, chatIframe }).then(() => {
-        console.log('Final iframe URL:', chatIframe.src);
-    });
+    setupIframe({ token, domain, chatIframe });
+
 
     console.log('what is iframe url', chatIframe.src)
 
@@ -345,39 +344,22 @@ async function setupIframe({ token, domain, chatIframe }) {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     console.log('Setting up iframe for Safari:', isSafari);
 
+
     if (isSafari) {
-        // First check for stored JWT
-        const storedJwt = localStorage.getItem('auth_token');
+        // For Safari, try to get stored JWT first
+        const jwt = localStorage.getItem('auth_token');
+        if (jwt) {
+            console.log('Using existing JWT:', jwt);
+            chatIframe.src = `${CHAT_DOMAIN}/?authorization=${jwt}`;
+        } else {
+            console.log('using the fallback method')
+            // Fallback to getting new JWT
 
-        if (storedJwt) {
-            console.log('Using existing JWT');
-            chatIframe.src = `${CHAT_DOMAIN}/?jwt=${storedJwt}`;
-            return;
-        }
+            chatIframe.src = `${CHAT_DOMAIN}/?authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5MjhiNzVkLWRjMGUtNDg0OS05MmZlLThlNThiMDk2ZjI4YSIsImVtYWlsIjoibmlraXRhLmJva3pAb3V0bG9vay5jb20iLCJkb21haW4iOiJiYi1uaWtpdGEtdGVzdC1lbnYubXlzaG9waWZ5LmNvbSIsImlhdCI6MTczNzYxOTY0MSwiZXhwIjoxNzM3NzA2MDQxfQ.arPiwiQn-8A5yWhr12zpxwoX4mlpkyIBGEMBDH23C94`;
 
-        try {
-            console.log('Fetching new JWT');
-            const response = await fetch(`${CHAT_DOMAIN}/api/auth/jwt-auth`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token, domain })
-            });
 
-            const data = await response.json();
 
-            if (data.jwt) {
-                console.log('Got new JWT, setting up iframe');
-                localStorage.setItem('auth_token', data.jwt);
-                chatIframe.src = `${CHAT_DOMAIN}/?jwt=${data.jwt}`;
-            } else {
-                console.error('Failed to get JWT');
-                chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
-            }
-        } catch (error) {
-            console.error('Error during Safari auth:', error);
-            chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
+            // chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
         }
     } else {
         chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
