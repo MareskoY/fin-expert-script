@@ -180,7 +180,9 @@ function removeScrollbarStyles() {
 }
 
 // ===================== Main function (one parameter auth) =====================
-function start({ token }) {
+async function start({ token }) {
+
+
     // 1) Add styles
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
@@ -344,24 +346,48 @@ async function setupIframe({ token, domain, chatIframe }) {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     console.log('Setting up iframe for Safari:', isSafari);
 
+    await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second delay
+
 
     if (isSafari) {
-        // For Safari, try to get stored JWT first
-        const jwt = localStorage.getItem('auth_token');
+        // Try to get JWT (either from storage or by fetching)
+        let jwt = localStorage.getItem('auth_token');
+        if (!jwt) {
+            jwt = await getJWT({ token, domain });
+        }
+
         if (jwt) {
-            console.log('Using existing JWT:', jwt);
+            console.log('Got JWT, setting iframe src');
             chatIframe.src = `${CHAT_DOMAIN}/?authorization=${jwt}`;
         } else {
-            console.log('using the fallback method')
-            // Fallback to getting new JWT
-
-            chatIframe.src = `${CHAT_DOMAIN}/?authorization=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5MjhiNzVkLWRjMGUtNDg0OS05MmZlLThlNThiMDk2ZjI4YSIsImVtYWlsIjoibmlraXRhLmJva3pAb3V0bG9vay5jb20iLCJkb21haW4iOiJiYi1uaWtpdGEtdGVzdC1lbnYubXlzaG9waWZ5LmNvbSIsImlhdCI6MTczNzYxOTY0MSwiZXhwIjoxNzM3NzA2MDQxfQ.arPiwiQn-8A5yWhr12zpxwoX4mlpkyIBGEMBDH23C94`;
-
-
-
-            // chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
+            console.log('No JWT available, using login flow');
+            chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
         }
     } else {
         chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     }
 }
+async function getJWT({ token, domain }) {
+    try {
+        const response = await fetch(`${CHAT_DOMAIN}/api/auth/jwt-auth`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, domain })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.jwt) {
+            console.log('setting JWT in script localstorage')
+            localStorage.setItem('auth_token', data.jwt);
+            return data.jwt;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting JWT:', error);
+        return null;
+    }
+}
+
