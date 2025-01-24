@@ -346,9 +346,6 @@ async function setupIframe({ token, domain, chatIframe }) {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     console.log('Setting up iframe for Safari:', isSafari);
 
-    await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second delay
-
-
     if (isSafari) {
         // Try to get JWT (either from storage or by fetching)
         let jwt = localStorage.getItem('auth_token');
