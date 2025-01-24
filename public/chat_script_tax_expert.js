@@ -180,7 +180,9 @@ function removeScrollbarStyles() {
 }
 
 // ===================== Main function (one parameter auth) =====================
-function start({token}) {
+async function start({ token }) {
+
+
     // 1) Add styles
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
@@ -229,7 +231,16 @@ function start({token}) {
     const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation allow-clipboard-write";
-    chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
+
+    setupIframe({ token, domain, chatIframe });
+
+
+    console.log('what is iframe url', chatIframe.src)
+
+    // chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
+
+
+
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
 
@@ -325,7 +336,58 @@ document.addEventListener("DOMContentLoaded", function () {
             //TODO 1111 is mock
             token = url.searchParams.get("token") || 1111;
             console.log("token2222", token)
-            start({token});
+            start({ token });
         }
     }, 1000);
 });
+
+
+async function setupIframe({ token, domain, chatIframe }) {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    console.log('Setting up iframe for Safari:', isSafari);
+
+
+    if (isSafari) {
+        // Try to get JWT (either from storage or by fetching)
+        let jwt = localStorage.getItem('auth_token');
+
+        // always fetch for now
+        if (true) {
+            jwt = await getJWT({ token, domain });
+        }
+
+        if (jwt) {
+            console.log('Got JWT, setting iframe src');
+            chatIframe.src = `${CHAT_DOMAIN}/?authorization=${jwt}`;
+        } else {
+            console.log('No JWT available, using login flow');
+            chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
+        }
+    } else {
+        chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
+    }
+}
+async function getJWT({ token, domain }) {
+    try {
+        const response = await fetch(`${CHAT_DOMAIN}/api/auth/jwt-auth`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, domain })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.jwt) {
+            console.log('setting JWT in script localstorage')
+            localStorage.setItem('auth_token', data.jwt);
+            return data.jwt;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting JWT:', error);
+        return null;
+    }
+}
+
