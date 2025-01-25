@@ -229,7 +229,7 @@ async function start({ token }) {
     // TODO: Use jwt_token here
     // const domain = window.location.hostname;
     const domain = "bb-nikita-test-env.myshopify.com";
-    chatIframe.allow = "same-origin";
+    chatIframe.allow = "same-origin autofocus";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation allow-clipboard-write";
 
     setupIframe({ token, domain, chatIframe });
