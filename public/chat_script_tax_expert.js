@@ -234,6 +234,14 @@ async function start({ token }) {
 
     setupIframe({ token, domain, chatIframe });
 
+    chatIframe.onload = () => {
+        setTimeout(() => {
+            const jwt = localStorage.getItem("auth_token");
+            chatIframe.contentWindow.postMessage({ type: "tax-expert-set-jwt", jwt }, "*");
+        }, 3000);
+    };
+
+
 
     console.log('what is iframe url', chatIframe.src)
 
@@ -353,7 +361,13 @@ async function setupIframe({ token, domain, chatIframe }) {
 
         // always fetch for now
         if (true) {
-            jwt = await getJWT({ token, domain });
+
+            try {
+                jwt = await getJWT({ token, domain });
+
+            } catch (err) {
+                console.error(' error fetching JWT in script', err)
+            }
         }
 
         if (jwt) {
