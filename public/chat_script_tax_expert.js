@@ -237,7 +237,11 @@ async function start({ token }) {
     chatIframe.onload = () => {
         setTimeout(() => {
             const jwt = localStorage.getItem("auth_token");
-            chatIframe.contentWindow.postMessage({ type: "tax-expert-set-jwt", jwt }, "*");
+
+            if (jwt) {
+                chatIframe.contentWindow.postMessage({ type: "tax-expert-set-jwt", jwt }, "*");
+
+            }
         }, 3000);
     };
 
