@@ -1,5 +1,5 @@
-// const CHAT_DOMAIN = "http://localhost:3000";
-const CHAT_DOMAIN = "https://app.askfinancas.pt";
+const CHAT_DOMAIN = "http://localhost:3000";
+// const CHAT_DOMAIN = "https://app.askfinancas.pt";
 // ===================== Styles=====================
 const STYLES_DEFAULT = `
     @font-face {
@@ -230,7 +230,7 @@ async function start({ token }) {
     // const domain = window.location.hostname;
     const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin autofocus";
-    chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation allow-clipboard-write";
+    chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation";
 
     setupIframe({ token, domain, chatIframe });
 
