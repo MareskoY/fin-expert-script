@@ -1,4 +1,3 @@
-// const CHAT_DOMAIN = "http://localhost:3000";
 const CHAT_DOMAIN = "https://app.askfinancas.pt";
 // ===================== Styles=====================
 const STYLES_DEFAULT = `
@@ -226,9 +225,7 @@ async function start({ token }) {
     // 6) Create iframe
     const chatIframe = document.createElement("iframe");
     chatIframe.id = "chapa-shopper-aid-iframe";
-    // TODO: Use jwt_token here
-    // const domain = window.location.hostname;
-    const domain = "bb-nikita-test-env.myshopify.com";
+    const domain = window.location.hostname; // possible to hardcode this value like const domain = "bb-nikita-test-env.myshopify.com";
     chatIframe.allow = "same-origin autofocus";
     chatIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation";
 
@@ -244,14 +241,6 @@ async function start({ token }) {
             }
         }, 3000);
     };
-
-
-
-    console.log('what is iframe url', chatIframe.src)
-
-    // chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
-
-
 
     chatContainer.appendChild(chatIframe);
     document.body.appendChild(chatContainer);
@@ -330,7 +319,6 @@ async function start({ token }) {
     window.addEventListener("message", (event) => {
         if (event.data.action === "tax-expert-copy-to-clipboard") {
             navigator.clipboard.writeText(event.data.content).then(() => {
-                console.log("Copied to clipboard:", event.data.content);
             }).catch((err) => {
                 console.error("Failed to copy text: ", err);
             });
@@ -341,13 +329,11 @@ async function start({ token }) {
 // ===================== Script initialization (DOM ready) =====================
 document.addEventListener("DOMContentLoaded", function () {
     const script = document.getElementById("tax-expert");
-    let token, uuid, buttonType, iframeType, openState, _iconValue, language;
+    let token;
     setTimeout(function () {
         if (script.src.includes("chat_script_tax_expert.js")) {
             const url = new URL(script.src);
-            //TODO 1111 is mock
             token = url.searchParams.get("token") || 1111;
-            console.log("token2222", token)
             start({ token });
         }
     }, 1000);
@@ -356,8 +342,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function setupIframe({ token, domain, chatIframe }) {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    console.log('Setting up iframe for Safari:', isSafari);
-
 
     if (isSafari) {
         // Try to get JWT (either from storage or by fetching)
@@ -365,7 +349,6 @@ async function setupIframe({ token, domain, chatIframe }) {
 
         // always fetch for now
         if (true) {
-
             try {
                 jwt = await getJWT({ token, domain });
 
@@ -375,16 +358,15 @@ async function setupIframe({ token, domain, chatIframe }) {
         }
 
         if (jwt) {
-            console.log('Got JWT, setting iframe src');
             chatIframe.src = `${CHAT_DOMAIN}/?authorization=${jwt}`;
         } else {
-            console.log('No JWT available, using login flow');
             chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}&auth_type=jwt`;
         }
     } else {
         chatIframe.src = `${CHAT_DOMAIN}/login?token=${token}&domain=${domain}`;
     }
 }
+
 async function getJWT({ token, domain }) {
     try {
         const response = await fetch(`${CHAT_DOMAIN}/api/auth/jwt-auth`, {
@@ -398,7 +380,6 @@ async function getJWT({ token, domain }) {
         const data = await response.json();
 
         if (response.ok && data.jwt) {
-            console.log('setting JWT in script localstorage')
             localStorage.setItem('auth_token', data.jwt);
             return data.jwt;
         }
